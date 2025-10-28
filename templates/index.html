@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <h2>Welcome, {{ username }}!</h2>
+  <a href="{{ url_for('logout') }}" 
+     style="background-color: crimson; color: white; padding: 8px 14px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+     Logout
+  </a>
+</div>
+
+<div class="form-container">
+  <h2>All Forms</h2>
+  {% if forms %}
+    <ul style="list-style-type: none; padding-left: 0;">
+      {% for form in forms %}
+        <li style="margin-bottom: 15px; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
+          <b>{{ form[1] }}</b>
+          <div style="margin-top: 8px;">
+            <a href="{{ url_for('view_form', form_id=form[0]) }}" class="btn" 
+               style="background-color: #4CAF50; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; margin-right: 5px;">
+               Open Form
+            </a>
+            <a href="{{ url_for('view_responses', form_id=form[0]) }}" class="btn" 
+               style="background-color: #2196F3; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; margin-right: 5px;">
+               View Responses
+            </a>
+
+            {% if form[2] == session.get('user_id') %}
+            <form action="{{ url_for('delete_form', form_id=form[0]) }}" method="POST" style="display:inline;"
+                  onsubmit="return confirm('Are you sure you want to delete this form?');">
+              <button type="submit" class="btn btn-danger" 
+                      style="background-color: crimson; color: white; padding: 6px 12px; border: none; border-radius: 6px;">
+                      Delete
+              </button>
+            </form>
+            {% endif %}
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No forms yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

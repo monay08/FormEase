@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="form-container">
+  <h2>{{ title }}</h2>
+  <form method="POST">
+    {% for q in questions %}
+      <div class="question" data-question-index="{{ loop.index }}">
+        <label><b>{{ q.text }}</b></label>
+
+        {% if q.type == 'short' %}
+          <!-- Short Answer -->
+          <input type="text" name="{{ q.text }}" required>
+
+        {% elif q.type == 'multiple' %}
+          <!-- Multiple Choice -->
+          {% for opt in q.options %}
+            <div class="option-item">
+              <input type="radio" name="{{ q.text }}" value="{{ opt }}" required> {{ opt }}
+            </div>
+          {% endfor %}
+
+        {% elif q.type == 'checkbox' %}
+          <!-- Checkbox (only one selectable at a time) -->
+          {% for opt in q.options %}
+            <div class="option-item">
+              <input type="checkbox" name="{{ q.text }}" value="{{ opt }}"> {{ opt }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="submit-btn">Submit Response</button>
+  </form>
+</div>
+{% endblock %}
+
+<style>
+.option-item {
+  margin-bottom: 5px;
+}
+</style>
+
+<script>
+// Allow only one checkbox checked per question group (client-side)
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".question").forEach(questionDiv => {
+    const checkboxes = questionDiv.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(box => {
+      box.addEventListener("change", () => {
+        if (box.checked) {
+          checkboxes.forEach(other => {
+            if (other !== box) other.checked = false;
+          });
+        }
+      });
+    });
+  });
+});
+</script>

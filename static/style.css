@@ -1,0 +1,106 @@
+:root {
+  --primary: #3b82f6;
+  --secondary: #2563eb;
+  --bg: #f8fafc;
+  --text: #1e293b;
+  --white: #ffffff;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+}
+
+.navbar {
+  background: var(--primary);
+  color: var(--white);
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+}
+
+.navbar a {
+  color: var(--white);
+  margin-left: 15px;
+  text-decoration: none;
+}
+
+.container {
+  max-width: 900px;
+  margin: 2rem auto;
+  background: var(--white);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.card {
+  background: var(--white);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.btn {
+  padding: 8px 15px;
+  border-radius: 8px;
+  text-decoration: none;
+  background: var(--primary);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn:hover {
+  background: var(--secondary);
+}
+
+.btn.secondary {
+  background: #64748b;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.btn {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+}
+
+.btn:hover {
+  opacity: 0.8;
+}

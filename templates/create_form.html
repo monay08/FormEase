@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="form-container">
+  <h2>Create a New Form</h2>
+  <form method="POST" onsubmit="prepareOptionsBeforeSubmit()">
+    <input type="text" name="title" placeholder="Form Title" required>
+
+    <div id="questions-container"></div>
+
+    <button type="button" class="add-btn" onclick="addQuestion()">➕ Add Question</button>
+    <button type="submit" class="submit-btn">Create Form</button>
+  </form>
+</div>
+
+<script>
+function addQuestion() {
+  const container = document.getElementById('questions-container');
+  const div = document.createElement('div');
+  div.classList.add('question-card');
+
+  div.innerHTML = `
+    <input type="text" name="question" placeholder="Enter your question" required>
+    <select name="type" onchange="toggleOptions(this)">
+      <option value="short">Short Answer</option>
+      <option value="multiple">Multiple Choice</option>
+      <option value="checkbox">Checkbox</option>
+    </select>
+    <div class="options-container" style="display:none;">
+      <div class="option-list"></div>
+      <button type="button" class="small-btn" onclick="addOption(this)">Add Option</button>
+    </div>
+    <input type="hidden" name="options">
+    <button type="button" onclick="this.parentElement.remove()">❌ Remove Question</button>
+  `;
+  container.appendChild(div);
+}
+
+function toggleOptions(select) {
+  const parent = select.parentElement;
+  const optContainer = parent.querySelector('.options-container');
+  if (select.value === 'multiple' || select.value === 'checkbox') {
+    optContainer.style.display = 'block';
+  } else {
+    optContainer.style.display = 'none';
+  }
+}
+
+function addOption(button) {
+  const list = button.parentElement.querySelector('.option-list');
+  const input = document.createElement('div');
+  input.innerHTML = `
+    <input type="text" placeholder="Option text" class="option-input">
+    <button type="button" class="remove-option" onclick="this.parentElement.remove()">✖</button>
+  `;
+  list.appendChild(input);
+}
+
+// Before submitting, combine all option inputs into comma-separated values
+function prepareOptionsBeforeSubmit() {
+  document.querySelectorAll('.question-card').forEach(card => {
+    const hidden = card.querySelector('input[name="options"]');
+    const opts = card.querySelectorAll('.option-input');
+    const values = Array.from(opts).map(o => o.value.trim()).filter(Boolean);
+    hidden.value = values.join(',');
+  });
+}
+</script>
+
+<style>
+.small-btn {
+  background-color: #6b7280;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  margin-top: 5px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.small-btn:hover {
+  background-color: #4b5563;
+}
+
+.option-list {
+  margin-top: 8px;
+}
+
+.option-input {
+  width: 80%;
+  margin-bottom: 5px;
+}
+
+.remove-option {
+  background-color: transparent;
+  border: none;
+  color: red;
+  cursor: pointer;
+}
+</style>
+{% endblock %}
