@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="text-center mb-5">
+  <h2 class="fw-bold text-primary">{{ form['title'] }}</h2>
+  <h5 class="text-muted">Answered by: <span class="badge bg-secondary-subtle text-secondary fs-6">{{ response['username'] }}</span></h5>
+  
+  <p class="mt-3">
+    <span class="d-inline-block p-2 px-4 rounded-pill bg-warning text-dark fs-6 fw-bolder shadow-sm">
+        Score: {{ "%.2f"|format(response['total_score']) }} pts
+    </span>
+  </p>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    {% for q in questions %}
+      {% set answers = user_answers.get(q['id'], []) %}
+      
+      <div class="card shadow-sm mb-4 border-start border-3 border-secondary-subtle">
+        <div class="card-body">
+          
+          <h5 class="card-title fw-bold mb-3 d-flex justify-content-between align-items-center">
+            <span>{{ loop.index }}. {{ q['question'] }}</span>
+            <span class="text-muted fw-normal badge bg-light text-dark">{{ q['score'] }} pts</span>
+          </h5>
+          <hr class="mt-0 mb-3">
+
+          {% if q['type'] == 'short' %}
+            <div class="mb-3">
+                <label class="form-label text-info fw-bold">User Answer:</label>
+                <p class="border p-2 rounded bg-light mb-0">{{ answers[0] if answers else 'No Answer' }}</p>
+            </div>
+            
+            {% if q['correct'] %}
+              <div class="mt-3">
+                <label class="form-label text-success fw-bold">Correct Answer:</label>
+                <p class="border border-success p-2 rounded bg-success-subtle text-success fw-bold mb-0">
+                  {{ q['correct']|join(', ') }}
+                </p>
+              </div>
+            {% endif %}
+
+          {% else %}
+            {% set correct_opts = q['correct'] | map('trim') | list %}
+
+            <div class="mb-3">
+              <label class="form-label text-info fw-bold">User Selections vs. Correct Answers:</label>
+              
+              <div class="p-3 border rounded">
+                {% for opt in q['options'] %}
+                  {% set is_user_selected = opt in answers %}
+                  {% set is_correct_opt = opt in correct_opts %}
+                  
+                  {% set class_modifier = '' %}
+                  {% if is_user_selected and is_correct_opt %}
+                    {% set class_modifier = 'text-success fw-bold' %} {% elif is_user_selected and not is_correct_opt %}
+                    {% set class_modifier = 'text-danger fw-bold' %}  {% elif not is_user_selected and is_correct_opt %}
+                    {% set class_modifier = 'text-warning fw-bold' %} {% endif %}
+                  
+                  <div class="form-check {{ class_modifier }} mb-1">
+                    <input class="form-check-input" type="{{ q['type'] == 'multiple' and 'radio' or 'checkbox' }}" disabled
+                           {% if is_user_selected %}checked{% endif %}>
+                    <label class="form-check-label w-100">
+                        {{ opt }}
+                        {% if is_user_selected and not is_correct_opt %}
+                            <i class="bi bi-x-circle-fill ms-2"></i> {% elif is_user_selected and is_correct_opt %}
+                            <i class="bi bi-check-circle-fill ms-2"></i> {% elif not is_user_selected and is_correct_opt %}
+                             <i class="bi bi-exclamation-triangle-fill ms-2"></i> {% endif %}
+                    </label>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="text-center mt-4 mb-3">
+  <a class="btn btn-primary" href="{{ url_for('view_responses', form_id=form['id']) }}">
+    <i class="bi bi-arrow-left"></i> Back to Responses List
+  </a>
+</div>
+
+{% endblock %}

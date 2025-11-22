@@ -2,21 +2,88 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FormEase</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title or "FormEase" }}</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+  
+  <style>
+    /* Background and Main Card Style */
+    body { 
+      background: #f7fafc; 
+    } 
+    .app-card { 
+      background: #fff; 
+      padding: 1.5rem; /* Increased padding */
+      border-radius: 12px; /* Slightly larger radius */
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1); /* Stronger shadow for depth */
+      border: 1px solid rgba(0,0,0,0.05); /* Subtle border */
+    } 
+    /* Navbar Styling */
+    .navbar {
+      background: #4f46e5 !important; /* Use important to ensure color holds */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Add a subtle shadow to the bar */
+    }
+    .navbar-brand img {
+      height: 40px;           
+      width: 40px;             
+      border-radius: 50%;     /* Changed to full circle for modern look */
+      object-fit: cover;      
+      margin-right: 10px;     
+      border: 2px solid #fff; 
+    }
+    .navbar-brand span {
+      font-size: 1.5rem; /* Larger brand text */
+    }
+  </style>
 </head>
 <body>
-  <nav class="navbar">
-    <h1 class="logo">FormEase</h1>
-    <div class="nav-links">
-      <a href="{{ url_for('index') }}">Home</a>
-      <a href="{{ url_for('create_form') }}">Create Form</a>
+  <nav class="navbar navbar-expand-lg">
+    <div class="container d-flex justify-content-between align-items-center">
+      <a class="navbar-brand d-flex align-items-center text-white" href="{{ url_for('index') }}">
+        <img src="{{ url_for('static', filename='img/img.png') }}" alt="FormEase Logo">
+        <span class="fw-bold">FormEase</span>
+      </a>
+
+      <div>
+        {% if session.get('username') %}
+          <span class="text-white me-2 fw-semibold">
+            Hi, <i class="bi bi-person-circle"></i> {{ session['username'] }}
+          </span>
+          <a class="btn btn-light btn-sm fw-semibold" href="{{ url_for('logout') }}">
+            <i class="bi bi-box-arrow-right"></i> Logout
+          </a>
+        {% else %}
+          <a class="btn btn-light btn-sm fw-semibold" href="{{ url_for('login') }}">
+            <i class="bi bi-box-arrow-in-right"></i> Login
+          </a>
+        {% endif %}
+      </div>
     </div>
   </nav>
-  <div class="container">
+
+  <div class="container my-5">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="row justify-content-center mb-4">
+          <div class="col-md-8">
+            {% for cat, msg in messages %}
+              <div class="alert alert-{{ 'success' if cat=='success' else 'danger' if cat=='danger' or cat=='error' else 'info' }} alert-dismissible fade show" role="alert">
+                {{ msg }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    {% endwith %}
     {% block content %}{% endblock %}
   </div>
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
-</body>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  </body>
 </html>

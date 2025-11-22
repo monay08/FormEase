@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3 class="text-center mb-4 text-primary">
+  Responses — {{ form['title'] }}
+</h3>
+
+<div class="card shadow-sm border-0">
+  <div class="card-body p-0">
+    {% if responses %}
+      
+      <div class="table-responsive">
+        <table class="table table-hover table-striped mb-0">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" style="width: 5%;">#</th>
+              <th scope="col" style="width: 30%;">User</th>
+              <th scope="col" style="width: 20%;" class="text-center">Total Score</th>
+              <th scope="col" style="width: 25%;" class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in responses %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td class="fw-bold text-muted">{{ r['username'] }}</td>
+                <td class="text-center">
+                  <span class="badge bg-success-subtle text-success fs-6 fw-bold p-2"><i>
+                    {{ "%.2f"|format(r['total_score']) }}
+                  </span>
+                </td>
+                <td class="text-center">
+                  <a href="{{ url_for('view_response_detail', form_id=form['id'], response_id=r['id']) }}" 
+                     class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-eye"></i> View Answers
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    {% else %}
+      <div class="p-4 text-center text-muted">
+        <p class="mb-0">No responses have been submitted for this form yet.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="mt-4">
+  <a class="btn btn-primary" href="{{ url_for('index') }}">
+    <i class="bi bi-arrow-left"></i> Back to Forms
+  </a>
+</div>
+
+{% endblock %}

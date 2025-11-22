@@ -1,59 +1,84 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="form-container">
-  <h2>{{ title }}</h2>
-  <form method="POST">
-    {% for q in questions %}
-      <div class="question" data-question-index="{{ loop.index }}">
-        <label><b>{{ q.text }}</b></label>
 
-        {% if q.type == 'short' %}
-          <!-- Short Answer -->
-          <input type="text" name="{{ q.text }}" required>
+<div class="card shadow-lg border-0">
+    <div class="card-header bg-primary text-white p-3">
+        <h3 class="mb-0 fw-bold">{{ form['title'] }}</h3>
+    </div>
+    <div class="card-body p-4">
 
-        {% elif q.type == 'multiple' %}
-          <!-- Multiple Choice -->
-          {% for opt in q.options %}
-            <div class="option-item">
-              <input type="radio" name="{{ q.text }}" value="{{ opt }}" required> {{ opt }}
-            </div>
-          {% endfor %}
-
-        {% elif q.type == 'checkbox' %}
-          <!-- Checkbox (only one selectable at a time) -->
-          {% for opt in q.options %}
-            <div class="option-item">
-              <input type="checkbox" name="{{ q.text }}" value="{{ opt }}"> {{ opt }}
-            </div>
-          {% endfor %}
+        {% if is_creator %}
+        <div class="alert alert-info border-0 shadow-sm mb-4">
+            <h5 class="alert-heading fw-bold"><i class="bi bi-info-circle-fill"></i> Form Preview Mode</h5>
+            <p class="mb-0">This is a preview. You cannot answer or submit your own form.</p>
+        </div>
         {% endif %}
-      </div>
-    {% endfor %}
-    <button type="submit" class="submit-btn">Submit Response</button>
-  </form>
+
+        <form method="POST" {% if is_creator %}onsubmit="return false;"{% endif %}>
+            
+            {% for q in questions %}
+            <div class="card shadow-sm mb-4 border-start border-3 border-secondary-subtle">
+                <div class="card-body">
+                    
+                    <label class="form-label d-block">
+                        <strong class="fs-5">{{ loop.index }}. {{ q['question'] }}</strong>
+                        <span class="text-muted fw-normal float-end">({{ "%.1f"|format(q['score']) }} pts)</span>
+                    </label>
+                    <hr class="mt-0 mb-3">
+
+                    <div class="form-question-body">
+                        {% set field_disabled = 'disabled' if is_creator else '' %}
+                        
+                        {% if q['type'] == 'short' %}
+                            <input type="text" name="{{ q['id'] }}" class="form-control form-control-lg" placeholder="Type your answer here..."
+                                   {{ field_disabled }}
+                                   {% if not is_creator %}required{% endif %}>
+
+                        {% elif q['type'] == 'multiple' %}
+                            {% for opt in q['options'] %}
+                            <div class="form-check p-3 border rounded mb-2 {% if is_creator %}bg-light{% endif %}">
+                                <input class="form-check-input" type="radio" name="{{ q['id'] }}" value="{{ opt }}"
+                                       id="{{ q['id'] }}_{{ loop.index }}"
+                                       {{ field_disabled }}
+                                       {% if not is_creator %}required{% endif %}>
+                                <label class="form-check-label fw-normal" for="{{ q['id'] }}_{{ loop.index }}">
+                                    {{ opt }}
+                                </label>
+                            </div>
+                            {% endfor %}
+
+                        {% elif q['type'] == 'checkbox' %}
+                            {% for opt in q['options'] %}
+                            <div class="form-check p-3 border rounded mb-2 {% if is_creator %}bg-light{% endif %}">
+                                <input class="form-check-input" type="checkbox" name="{{ q['id'] }}" value="{{ opt }}"
+                                       id="{{ q['id'] }}_{{ loop.index }}"
+                                       {{ field_disabled }}>
+                                <label class="form-check-label fw-normal" for="{{ q['id'] }}_{{ loop.index }}">{{ opt }}</label>
+                            </div>
+                            {% endfor %}
+                            <small class="text-muted mt-2 d-block"><i class="bi bi-info-circle"></i> Select all applicable answers.</small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% if not is_creator %}
+            <div class="text-center mt-4">
+                <button class="btn btn-success btn-lg shadow" type="submit">
+                    <i class="bi bi-send-fill"></i> Submit Form
+                </button>
+            </div>
+            {% endif %}
+        </form>
+
+    </div>
 </div>
+
+<div class="mt-4 text-center">
+    <a class="btn btn-primary" href="{{ url_for('index') }}">
+        <i class="bi bi-arrow-left"></i> Back to Forms
+    </a>
+</div>
+
 {% endblock %}
-
-<style>
-.option-item {
-  margin-bottom: 5px;
-}
-</style>
-
-<script>
-// Allow only one checkbox checked per question group (client-side)
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".question").forEach(questionDiv => {
-    const checkboxes = questionDiv.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(box => {
-      box.addEventListener("change", () => {
-        if (box.checked) {
-          checkboxes.forEach(other => {
-            if (other !== box) other.checked = false;
-          });
-        }
-      });
-    });
-  });
-});
-</script>
